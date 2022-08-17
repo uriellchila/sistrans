@@ -11,24 +11,26 @@ use \App\Models\User;
 class PostTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
+    //use WithFaker;
     /**
      * A basic feature test example.
      * @test
-     * @return void
+     * 
      */
     public function stores_post()
     {
-        //$user = create('App\User');
+        $user = User::factory()->create();
         $data=[
             'title'=>$this->faker->sentence($nbWords=6,$variableNbWords=true),
             'content'=>$this->faker->text($maxNbChars=40),
-            //'author_id'=>$user->id
+            'author_id'=> $user->id
             
         ];
-        $response=$this->json('POST',$this->baseUrl."post",$data);
+        $this->withoutExceptionHandling();
+        $response=$this->json('POST',$this->baseUrl.'posts',$data);
         $response->assertStatus(201);
-        $this->assertDatabaseHas('post',$data);
-        $post=Post::all()->fisrt();
+        $this->assertDatabaseHas('posts',$data);
+        $post=Post::all()->first();
         $response->assertJson([
           'data'=>[
             'id'=>$post->id,
