@@ -17,25 +17,23 @@ class PostTest extends TestCase
      * @test
      * 
      */
-    public function stores_post()
-    {
-        $user = User::factory()->create();
-        $data=[
-            'title'=>$this->faker->sentence($nbWords=6,$variableNbWords=true),
-            'content'=>$this->faker->text($maxNbChars=40),
-            'author_id'=> $user->id
-            
-        ];
-        $this->withoutExceptionHandling();
-        $response=$this->json('POST',$this->baseUrl.'posts',$data);
-        $response->assertStatus(201);
-        $this->assertDatabaseHas('posts',$data);
-        $post=Post::all()->first();
-        $response->assertJson([
-          'data'=>[
-            'id'=>$post->id,
-            'title'=>$post->title,
-          ]
-        ]);
+    
+    public function update_post(){
+      
+      $data=[
+        'title'=>$this->faker->sentence($nbWords=6,$variableNbWords=true),
+        'content'=>$this->faker->text($maxNbChars=40)
+        
+    ];
+      User::factory()->create();
+      $this->withoutExceptionHandling();
+      $post= Post::factory()->create();
+      $response=$this->json('PUT',$this->baseUrl."posts/{$post->id}");
+      $response->assertStatus(200);
+      $post=$post->fresh();
+      $this->assertEquals($post->title,$data['title']);
+      $this->assertEquals($post->content,$data['content']);
+
     }
+   
 }
